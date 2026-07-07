@@ -1,20 +1,18 @@
 import { useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
 
 export default function IdleCamera() {
-  useFrame((state, delta) => {
+  useFrame((state) => {
     const t = state.clock.elapsedTime
 
-    // Kamera muter pelan mengelilingi kota dalam radius tetap,
-    // sin & cos dipakai supaya gerakannya melingkar (bukan garis lurus)
-    const radius = 45
-    const speed = 0.05 // makin kecil = makin pelan muternya
+    const speed = 1        // kecepatan maju menyusuri jalan
+    const range = 150       // jarak tempuh sebelum looping ulang
+    const startZ = 45      // titik mulai (jauh)
 
-    state.camera.position.x = Math.sin(t * speed) * radius
-    state.camera.position.z = Math.cos(t * speed) * radius
-    state.camera.position.y = 60 + Math.sin(t * 0.2) * 5 // sedikit naik-turun juga
+    // Kamera terus maju (Z makin kecil), lalu looping balik ke titik awal
+    const z = startZ - ((t * speed) % range)
 
-    state.camera.lookAt(0, 0, 0)
+    state.camera.position.set(0, 6, z)
+    state.camera.lookAt(0, -5, z - 20) // titik pandang selalu di depan kamera, agak mendongak
   })
 
   return null
