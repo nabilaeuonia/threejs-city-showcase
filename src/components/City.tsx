@@ -6,13 +6,11 @@ type Building = {
   color: string
 }
 
-// Membuat data gedung secara procedural: posisi grid + tinggi acak, warna hitam kebiruan
 function generateBuildings(gridSize = 20, spacing = 3) {
   const buildings: Building[] = []
 
   for (let x = -gridSize; x <= gridSize; x++) {
     for (let z = -gridSize; z <= gridSize; z++) {
-      // beri jalan (skip beberapa grid) biar ada pola jalan raya
       if (x % 3 === 0 || z % 3 === 0) continue
 
       const height = 2 + Math.random() * 20
@@ -22,82 +20,48 @@ function generateBuildings(gridSize = 20, spacing = 3) {
       buildings.push({
         position: [x * spacing, height / 2, z * spacing],
         size: [width, height, depth],
-        color: '#0c0c14', // <-- INI warna kebiruannya, sedikit tint biru dari hitam pekat
+        color: '#0c0c14',
       })
     }
   }
   return buildings
 }
 
-// Jendela-jendela kecil menyala yang nempel di 4 sisi badan gedung
-function Windows({ building }: { building: Building }) {
+// GANTI: dari komponen "Windows" (banyak jendela, berat) jadi "CornerGlow" (1 garis neon, ringan)
+function CornerGlow({ building }: { building: Building }) {
   const { position, size } = building
   const [width, height, depth] = size
-
-  const windows = useMemo(() => {
-    const items: { pos: [number, number, number]; rot: [number, number, number]; color: string }[] = []
-    const rows = Math.floor(height / 1.2)
-
-    const sides = [
-      { offset: depth / 2 + 0.01, rotY: 0, span: width },
-      { offset: -(depth / 2 + 0.01), rotY: Math.PI, span: width },
-      { offset: width / 2 + 0.01, rotY: Math.PI / 2, span: depth },
-      { offset: -(width / 2 + 0.01), rotY: -Math.PI / 2, span: depth },
-    ]
-
-    sides.forEach((side) => {
-      const cols = Math.floor(side.span / 0.5)
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (Math.random() > 0.6) continue
-
-          const along = -side.span / 2 + 0.3 + c * 0.5
-          const wy = -height / 2 + 0.6 + r * 1.2
-          const color = Math.random() > 0.85 ? '#ffb454' : '#9fd8ff'
-
-          const isFrontBack = side.rotY === 0 || side.rotY === Math.PI
-          const pos: [number, number, number] = isFrontBack
-            ? [along, wy, side.offset]
-            : [side.offset, wy, along]
-
-          items.push({ pos, rot: [0, side.rotY, 0], color })
-        }
-      }
-    })
-
-    return items
-  }, [width, height, depth])
+  const color = '#4fd8ff'
 
   return (
-    <group position={position}>
-      {windows.map((w, i) => (
-        <mesh key={i} position={w.pos} rotation={w.rot}>
-          <planeGeometry args={[0.2, 0.3]} />
-          <meshStandardMaterial
-            color={w.color}
-            emissive={w.color}
-            emissiveIntensity={1.5}
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
-    </group>
+    <mesh
+      position={[
+        position[0] + width / 2,
+        position[1],
+        position[2] + depth / 2,
+      ]}
+    >
+      <boxGeometry args={[0.08, height, 0.08]} />
+      <meshStandardMaterial
+        color={color}
+        emissive={color}
+        emissiveIntensity={2.5}
+        toneMapped={false}
+      />
+    </mesh>
   )
 }
 
-// Komponen utama City -- INI YANG KEMARIN HILANG
 export default function City() {
   const buildings = useMemo(() => generateBuildings(), [])
 
   return (
     <group>
-      {/* Ground / jalan -- dibuat lebih gelap dari gedung biar ada kontras */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[200, 200]} />
         <meshStandardMaterial color="#020204" />
       </mesh>
 
-      {/* Gedung-gedung procedural + jendela di 4 sisi */}
       {buildings.map((b, i) => (
         <group key={i}>
           <mesh position={b.position} castShadow receiveShadow>
@@ -108,7 +72,8 @@ export default function City() {
               metalness={0.3}
             />
           </mesh>
-          <Windows building={b} />
+          {/* GANTI: cuma 1 dari 3 gedung yang dikasih glow, biar ringan */}
+          {i % 3 === 0 && <CornerGlow building={b} />}
         </group>
       ))}
     </group>
