@@ -1,43 +1,44 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 type Props = {
   onStart: () => void
 }
 
 export default function Landing({ onStart }: Props) {
+  const [transitioning, setTransitioning] = useState(false)
+
+  const handleStart = () => {
+    if (transitioning) return
+    setTransitioning(true)
+    setTimeout(onStart, 500)
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="fixed inset-0 z-20 flex flex-col items-center justify-center text-center pointer-events-none"
+    <div
+      className="fixed inset-0 z-20 flex flex-col items-center justify-center text-center"
+      style={{ pointerEvents: transitioning ? 'none' : 'auto' }}
     >
-      <h1 className="text-blue-400 font-extrabold tracking-tight text-4xl sm:text-8xl drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">
-        SHOWCASE
-      </h1>
-      <p className="text-gray-400 text-lg sm:text-2xl tracking-[0.3em] mt-2">
-        WITH TREE.JS
-      </p>
-
-      <p className="text-gray-400 text-sm mt-8">
-        Project by <span className="text-white">Enuma Technology</span>
-      </p>
-
-      <motion.button
-        onClick={onStart}
-        className="pointer-events-auto mt-5 px-8 py-4 text-white font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white hover:text-black transition"
-        animate={{
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
+      <div
+        className={`animated-text-container flex flex-col items-center justify-center${
+          transitioning ? ' transitioning' : ''
+        }`}
       >
-        View Projects
-      </motion.button>
-    </motion.div>
+        <h1 className="main-title">ANIMATIONS</h1>
+        <p className="wavy-text">WITH THREE.JS</p>
+
+        <p className="description-text">
+          Notes and projects with{' '}
+          <span className="description-link">THREE.JS</span>
+        </p>
+
+        <div
+          className="view-projects-button"
+          onClick={handleStart}
+          role="button"
+        >
+          VIEW PROJECTS
+        </div>
+      </div>
+    </div>
   )
 }

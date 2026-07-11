@@ -6,22 +6,40 @@ type Building = {
   color: string
 }
 
-function generateBuildings(gridSize = 20, spacing = 3) {
+// Zone-based city: tall dense core, medium ring, sparse low outskirts —
+// mirrors the "central / outer" zones of treejsprojects.vercel.app
+function generateBuildings(gridSize = 22, spacing = 3) {
   const buildings: Building[] = []
+  const centralRadius = Math.floor(gridSize * 0.5)
+  const midRadius = Math.floor(gridSize * 0.72)
 
   for (let x = -gridSize; x <= gridSize; x++) {
     for (let z = -gridSize; z <= gridSize; z++) {
       if (x % 3 === 0 || z % 3 === 0) continue
-      
-      const isTall = Math.random() > 0.75
-      const height = isTall ? 25 + Math.random() * 25 : 3 + Math.random() * 10
+
+      const ring = Math.max(Math.abs(x), Math.abs(z))
+      const isCentral = ring <= centralRadius
+      const isMid = ring <= midRadius && !isCentral
+
+      // Skip some plots in the outer zones so the skyline thins out
+      if (!isCentral) {
+        const keep = isMid ? Math.random() > 0.25 : Math.random() > 0.55
+        if (!keep) continue
+      }
+
+      const height = isCentral
+        ? Math.max(4, 14 + Math.random() * 34)
+        : isMid
+        ? Math.max(3, 6 + Math.random() * 18)
+        : Math.max(2.5, 3 + Math.random() * 8)
+
       const width = 3 + Math.random() * 1.5
       const depth = 3 + Math.random() * 1.5
 
       buildings.push({
         position: [x * spacing, height / 2, z * spacing],
         size: [width, height, depth],
-        color: '#0c0c14',
+        color: '#0b0b13',
       })
     }
   }
@@ -64,13 +82,21 @@ function SparseWindows({ building }: { building: Building }) {
   const [width, height, depth] = size
 
   const windows = useMemo(() => {
-    const count = 5 + Math.floor(Math.random() * 5) // 2 atau 3 jendela saja
+    // More lit windows on taller buildings so the core reads as denser
+    const count = 5 + Math.floor(Math.random() * 5) + Math.floor(height / 8)
     const items: { pos: [number, number, number]; rot: [number, number, number]; color: string }[] = []
+
+    // Warm + cool window palette lifted from the target scene
+    const warm = ['#ffffee', '#ffffdd', '#fffacd', '#ffefd5', '#ffaa33']
+    const cool = ['#aaddff', '#add8e6', '#afeeee', '#b0c4de', '#c0d0ff', '#e0e8ff']
 
     for (let i = 0; i < count; i++) {
       const onFront = Math.random() > 0.5
       const wy = -height / 2 + Math.random() * height * 0.8 + height * 0.1
-      const color = Math.random() > 0.85 ? '#ffb454' : '#9fd8ff'
+      const color =
+        Math.random() > 0.7
+          ? warm[Math.floor(Math.random() * warm.length)]
+          : cool[Math.floor(Math.random() * cool.length)]
 
       if (onFront) {
         const wx = (Math.random() - 0.5) * (width * 0.6)

@@ -8,3 +8,134 @@ html, body, #root {
   background: #000;
   overflow: hidden;
 }
+
+/* ---------- Landing overlay (match treejsprojects.vercel.app) ---------- */
+
+@keyframes wave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes blink-scale {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.animated-text-container {
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.animated-text-container.transitioning {
+  opacity: 0;
+  transform: translateY(-30px) scale(0.95);
+}
+
+.main-title {
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 6rem;
+  font-weight: 900;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 2px white;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+  line-height: 1.1;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.wavy-text {
+  background-image: linear-gradient(to right, #6a82fb, #7b93ff, #8ec5fc, #7b93ff, #6a82fb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: wave 10s linear infinite;
+  background-size: 200% 200%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-top: -0.5rem;
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  opacity: 0.9;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.description-text {
+  color: white;
+  font-family: monospace;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-top: 2.5rem;
+  text-align: center;
+  max-width: 80%;
+  line-height: 1.6;
+  opacity: 0.8;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.description-link {
+  color: #aaaaff;
+  text-decoration: underline;
+}
+
+.view-projects-button {
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 3rem;
+  text-align: center;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  animation: blink-scale 2s infinite ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.view-projects-button:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 3.2rem;
+    -webkit-text-stroke: 1px white;
+    letter-spacing: 0.02em;
+  }
+  .wavy-text {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .description-text {
+    font-size: 0.9rem;
+    max-width: 90%;
+    margin-top: 1.5rem;
+  }
+  .view-projects-button {
+    font-size: 1rem;
+    margin-top: 2rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title { font-size: 2.5rem; }
+  .wavy-text { font-size: 0.9rem; }
+  .description-text { font-size: 0.8rem; margin-top: 1rem; }
+  .view-projects-button { font-size: 0.9rem; margin-top: 1.5rem; }
+}
